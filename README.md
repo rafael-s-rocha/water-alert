@@ -1,13 +1,27 @@
-# run
+# repo
+https://github.com/rafael-s-rocha/water-alert
+
+# run local
 npm run dev
 
-# testar
+# testar local
 curl -X POST http://localhost:3000/api/water-alert \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 6524e2acd5895d036370018362b4f32d17b13ba3fe4071295e314b151eb07318" \
   -d '{"sensor":"reservatorio-maquete","nivel":90}'
 
 curl -X POST http://localhost:3000/api/water-alert \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer 6524e2acd5895d036370018362b4f32d17b13ba3fe4071295e314b151eb07318" \
+  -d '{"sensor":"reservatorio-maquete","nivel":100}'
+
+# testar vercel
+curl -X POST https://water-alert-api.vercel.app/api/water-alert \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer 6524e2acd5895d036370018362b4f32d17b13ba3fe4071295e314b151eb07318" \
+  -d '{"sensor":"reservatorio-maquete","nivel":90}'
+
+curl -X POST https://water-alert-api.vercel.app/api/water-alert \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 6524e2acd5895d036370018362b4f32d17b13ba3fe4071295e314b151eb07318" \
   -d '{"sensor":"reservatorio-maquete","nivel":100}'
