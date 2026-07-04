@@ -11,11 +11,21 @@ export async function POST(req: NextRequest) {
 
   const payload = await req.json().catch(() => ({}));
 
-  const nivel = Number(payload.nivel ?? 100);
+  const nivel = Number(payload.nivel ?? 0);
   const deviceId = String(payload.device_id ?? "esp32-01");
+  const payloadStatus = String(payload.status ?? "").toUpperCase();
 
-  const isCritical = nivel >= 100;
-  const status = isCritical ? "CRITICAL" : "WARNING";
+  const status =
+    payloadStatus === "CRITICAL" || payloadStatus === "WARNING"
+      ? payloadStatus
+      : nivel >= 95
+        ? "CRITICAL"
+        : nivel >= 80
+          ? "WARNING"
+          : "NORMAL";
+
+  const isCritical = status === "CRITICAL";
+  const isWarning = status === "WARNING";
   const smsDryRun = process.env.SMS_DRY_RUN === "true";
 
   const emoji = isCritical ? "🚨" : "⚠️";
@@ -27,12 +37,23 @@ export async function POST(req: NextRequest) {
     timeStyle: "medium",
   });
 
+  const statusMessage = isCritical
+    ? "Risco de transbordo! Nível crítico atingido."
+    : "Próximo da capacidade máxima.";
+
   const smsBody =
     `${emoji} EXPOCOL - ${tipoAlerta}\n\n` +
     "📍 Sensor: La Salle\n" +
-    `📊 Nível: ${nivel}%\n` +
-    `⚠️ Status: ${isCritical ? "Risco de transbordo!" : "Próximo da capacidade máxima!"}\n` +
+    `📊 Nível: ${nivel.toFixed(1)}%\n` +
+    `${emoji} Status: ${statusMessage}\n` +
     `🕒 Horário: ${horario}`;
+
+  if (!isWarning && !isCritical) {
+    return NextResponse.json(
+      { ok: false, error: "Status does not require alert", nivel, status },
+      { status: 400 }
+    );
+  }
 
   let smsSent = false;
   let twilioSid: string | null = null;
@@ -80,7 +101,7 @@ export async function POST(req: NextRequest) {
     if (error.moreInfo) {
         console.error("More Info:", error.moreInfo);
     }
-}
+  }
 
   const { error: dbError } = await supabase.from("sensor_readings").insert({
     device_id: deviceId,
