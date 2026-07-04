@@ -29,24 +29,17 @@ export async function POST(req: NextRequest) {
   const smsDryRun = process.env.SMS_DRY_RUN === "true";
 
   const emoji = isCritical ? "🚨" : "⚠️";
-  const tipoAlerta = isCritical ? "ALERTA CRÍTICO" : "ATENÇÃO";
-
-  const horario = new Date().toLocaleString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    dateStyle: "short",
-    timeStyle: "medium",
-  });
+  const tipoAlerta = isCritical ? "CRITICO" : "ATENCAO";
 
   const statusMessage = isCritical
-    ? "Risco de transbordo! Nível crítico atingido."
-    : "Próximo da capacidade máxima.";
+    ? "RISCO DE TRANSBORDO"
+    : "PROXIMO DO LIMITE";
 
   const smsBody =
-    `${emoji} EXPOCOL - ${tipoAlerta}\n\n` +
-    "📍 Sensor: La Salle\n" +
-    `📊 Nível: ${nivel.toFixed(1)}%\n` +
-    `${emoji} Status: ${statusMessage}\n` +
-    `🕒 Horário: ${horario}`;
+    `${emoji} EXPOCOL ${tipoAlerta}\n` +
+    `Sensor La Salle\n` +
+    `Nivel ${nivel.toFixed(1)}%\n` +
+    `${statusMessage}`;
 
   if (!isWarning && !isCritical) {
     return NextResponse.json(
@@ -91,15 +84,15 @@ export async function POST(req: NextRequest) {
     errorMessage = error.message;
 
     if (error.code) {
-        console.error("Code:", error.code);
+      console.error("Code:", error.code);
     }
 
     if (error.status) {
-        console.error("Status:", error.status);
+      console.error("Status:", error.status);
     }
 
     if (error.moreInfo) {
-        console.error("More Info:", error.moreInfo);
+      console.error("More Info:", error.moreInfo);
     }
   }
 
