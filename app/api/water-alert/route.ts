@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
   });
 
   const smsBody =
-    `${emoji} ESPOCOL - ${tipoAlerta}\n\n` +
-    "📍 Sensor: Reservatório Principal\n" +
+    `${emoji} EXPOCOL - ${tipoAlerta}\n\n` +
+    "📍 Sensor: La Salle\n" +
     `📊 Nível: ${nivel}%\n` +
     `⚠️ Status: ${isCritical ? "Risco de transbordo!" : "Próximo da capacidade máxima!"}\n` +
     `🕒 Horário: ${horario}`;
@@ -64,9 +64,23 @@ export async function POST(req: NextRequest) {
       twilioSid = msg.sid;
       twilioStatus = msg.status;
     }
-  } catch (error) {
-    errorMessage = error instanceof Error ? error.message : "Erro desconhecido ao enviar SMS";
-  }
+  } catch (error: any) {
+    console.error("TWILIO ERROR:", error);
+
+    errorMessage = error.message;
+
+    if (error.code) {
+        console.error("Code:", error.code);
+    }
+
+    if (error.status) {
+        console.error("Status:", error.status);
+    }
+
+    if (error.moreInfo) {
+        console.error("More Info:", error.moreInfo);
+    }
+}
 
   const { error: dbError } = await supabase.from("sensor_readings").insert({
     device_id: deviceId,

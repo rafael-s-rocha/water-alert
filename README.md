@@ -11,7 +11,14 @@ curl -X POST http://localhost:3000/api/water-alert \
   -d '{"nivel":92,"device_id":"esp32-01"}'
 
 # testar vercel
-curl -X POST http://water-alert-api.vercel.app/api/water-alert \
+curl -X POST https://water-alert-api.vercel.app/api/water-alert \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 6524e2acd5895d036370018362b4f32d17b13ba3fe4071295e314b151eb07318" \
-  -d '{"nivel":92,"device_id":"esp32-01"}'
+  -d '{"nivel":95,"device_id":"esp32-01"}'
+
+
+
+curl -X POST https://water-alert-api.vercel.app/api/water-alert \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer 6524e2acd5895d036370018362b4f32d17b13ba3fe4071295e314b151eb07318" \
+  -d '{"nivel":95,"device_id":"esp32-01"}'
